@@ -1,0 +1,31 @@
+    ________          __  ______           __ 
+   / ____/ /__  ___  / /_/ ____/___ ______/ /_
+  / /_  / / _ \/ _ \/ __/ /   / __ `/ ___/ __/
+ / __/ / /  __/  __/ /_/ /___/ /_/ / /  / /_  
+/_/   /_/\___/\___/\__/\____/\__,_/_/   \__/  
+                                              
+
++---------------------------+
+| How to update FleetCart?  |
++---------------------------+
+
+Following these steps, you can easily update FleetCart to the latest version:
+
+[Important] 1. Please backup your website to mitigate the risk of data loss and facilitate future recovery.
+
+            2. Delete all the files and folders except the following:
+                » Files: .env
+                » Folders: public, storage
+
+            3. Paste and replace all the files and folders from the new version except the following:
+                » Files: .env
+
+You're done! Congratulations on updating your application successfully.
+
+If you've got any additional queries, please get in touch with customer support:
+
+——————————————————————————————————
+    Customer Support,            
+    Envaysoft                     
+    Email: envaysoft@gmail.com   
+——————————————————————————————————
