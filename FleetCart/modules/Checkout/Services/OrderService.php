@@ -2,6 +2,8 @@
 
 namespace Modules\Checkout\Services;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Modules\Cart\CartTax;
 use Modules\Cart\CartItem;
 use Modules\Cart\Facades\Cart;
@@ -14,20 +16,123 @@ use Modules\Shipping\Facades\ShippingMethod;
 
 class OrderService
 {
+    /**
+     * Seconds a visitor keeps access to a freshly created order
+     * (completing or cancelling it from the payment redirect).
+     */
+    private const OWNERSHIP_TTL = 7200;
+
+
     public function create($request)
     {
         $this->mergeShippingAddress($request);
         $this->saveAddress($request);
         $this->addShippingMethodToCart($request);
 
-        return tap($this->store($request), function ($order) {
-            $this->storeOrderProducts($order);
-            $this->storeOrderDownloads($order);
-            $this->storeFlashSaleProductOrders($order);
-            $this->incrementCouponUsage($order);
-            $this->attachTaxes($order);
-            $this->reduceStock();
+        // One transaction: if stock can not be taken (CartItemsStockException)
+        // the order, its lines and the coupon usage are rolled back together.
+        $order = DB::transaction(function () use ($request) {
+            return tap($this->store($request), function ($order) {
+                $this->storeOrderProducts($order);
+                $this->storeOrderDownloads($order);
+                $this->storeFlashSaleProductOrders($order);
+                $this->incrementCouponUsage($order);
+                $this->attachTaxes($order);
+                $this->reduceStock();
+            });
         });
+
+        $this->rememberOwner($order);
+
+        return $order;
+    }
+
+
+    /**
+     * Run the callback while holding a per-visitor database lock.
+     *
+     * A MySQL named lock is used because the cache store of this app does not
+     * implement atomic locks.
+     */
+    public function withCheckoutLock(callable $callback)
+    {
+        $name = 'fleetcart.checkout.' . $this->visitorKey();
+
+        DB::select('SELECT GET_LOCK(?, 10)', [$name]);
+
+        try {
+            return $callback();
+        } finally {
+            DB::select('SELECT RELEASE_LOCK(?)', [$name]);
+        }
+    }
+
+
+    /**
+     * Fingerprint of what is in the cart, used to recognise a repeated
+     * submit of the same checkout.
+     */
+    public function cartSignature($request): string
+    {
+        return md5(json_encode([
+            Cart::items()->map(fn (CartItem $item) => [$item->id, $item->qty])->values(),
+            $request->payment_method,
+            $request->shipping_method,
+            $request->customer_email,
+            $request->billing,
+        ]));
+    }
+
+
+    /**
+     * The order a previous, identical submit of this cart already created.
+     */
+    public function findDuplicate(string $signature): ?Order
+    {
+        $orderId = Cache::get($this->duplicateKey($signature));
+
+        return $orderId
+            ? Order::where('id', $orderId)->where('status', Order::PENDING_PAYMENT)->first()
+            : null;
+    }
+
+
+    public function rememberSignature(string $signature, Order $order): void
+    {
+        Cache::put($this->duplicateKey($signature), $order->id, 600);
+    }
+
+
+    public function isOwnedByVisitor(int $orderId): bool
+    {
+        if (Cache::get("checkout.owner.{$orderId}") === $this->visitorKey()) {
+            return true;
+        }
+
+        return auth()->check()
+            && Order::where('id', $orderId)->where('customer_id', auth()->id())->exists();
+    }
+
+
+    /**
+     * Identifies the visitor's browsing session. It is the cart's instance
+     * name, which the cart module sets to the session id.
+     */
+    private function visitorKey(): string
+    {
+        return Cart::getInstanceName();
+    }
+
+
+    private function rememberOwner(Order $order): void
+    {
+        Cache::put("checkout.owner.{$order->id}", $this->visitorKey(), self::OWNERSHIP_TTL);
+    }
+
+
+    private function duplicateKey(string $signature): string
+    {
+        return 'checkout.duplicate.' . $this->visitorKey() . '.' . $signature;
     }
 
 

@@ -3,6 +3,7 @@
 namespace Modules\Checkout\Http\Controllers;
 
 use Exception;
+use Modules\Cart\Exceptions\CartItemsStockException;
 use Modules\Support\Country;
 use Modules\Cart\Facades\Cart;
 use Modules\Page\Entities\Page;
@@ -65,7 +66,26 @@ class CheckoutController extends Controller
             $customerService->register($request)->login();
         }
 
-        $order = $orderService->create($request);
+        $signature = $orderService->cartSignature($request);
+
+        // Serialise submits of the same cart so a double click / retry can not
+        // create two orders or take the stock twice.
+        try {
+            $order = $orderService->withCheckoutLock(function () use ($orderService, $request, $signature) {
+                $order = $orderService->findDuplicate($signature);
+
+                if (!$order) {
+                    $order = $orderService->create($request);
+
+                    $orderService->rememberSignature($signature, $order);
+                }
+
+                return $order;
+            });
+        } catch (CartItemsStockException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+
         $gateway = Gateway::get($request->payment_method);
 
         try {

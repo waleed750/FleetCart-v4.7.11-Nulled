@@ -2,6 +2,7 @@
 
 namespace Modules\Cart;
 
+use Modules\Cart\Exceptions\CartItemsStockException;
 use JsonSerializable;
 use Modules\Support\Money;
 use Modules\Tax\Entities\TaxRate;
@@ -163,18 +164,52 @@ class Cart extends DarryldecodeCart implements JsonSerializable
     }
 
 
+    /**
+     * Take the cart quantities out of stock.
+     *
+     * The decrement is conditional (qty >= requested) so concurrent orders can
+     * never push stock below zero. Items already taken are put back before the
+     * exception is thrown, so a failed attempt leaves stock untouched.
+     *
+     * @throws CartItemsStockException
+     */
     public function reduceStock()
     {
-        $this->manageStock(function ($cartItem) {
-            $cartItem->item->decrement('qty', $cartItem->qty);
-        });
+        $taken = collect();
+
+        try {
+            $this->manageStock(function ($cartItem) use ($taken) {
+                $affected = $cartItem->item->newQuery()
+                    ->whereKey($cartItem->item->getKey())
+                    ->where('qty', '>=', $cartItem->qty)
+                    ->decrement('qty', $cartItem->qty);
+
+                if ($affected === 0) {
+                    throw new CartItemsStockException(
+                        trans('cart::messages.one_or_more_product_doesn\'t_have_enough_stock')
+                    );
+                }
+
+                $taken->push($cartItem);
+            });
+        } catch (CartItemsStockException $e) {
+            $taken->each(function ($cartItem) {
+                $cartItem->item->increment('qty', $cartItem->qty);
+            });
+
+            throw $e;
+        }
     }
 
 
+    /**
+     * Put the cart quantities back in stock (variant or product, mirroring
+     * what reduceStock() took).
+     */
     public function restoreStock()
     {
         $this->manageStock(function ($cartItem) {
-            $cartItem->product->increment('qty', $cartItem->qty);
+            $cartItem->item->increment('qty', $cartItem->qty);
         });
     }
 

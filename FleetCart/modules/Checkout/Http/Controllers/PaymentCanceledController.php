@@ -16,11 +16,21 @@ class PaymentCanceledController
      * @param string $paymentMethod
      * @param OrderService $orderService
      */
-    public function store(Request $request, $orderId)
+    public function store(Request $request, OrderService $orderService, $orderId)
     {
-        Order::where('id', $orderId)->forceDelete();
+        abort_unless($orderService->isOwnedByVisitor((int)$orderId), 403);
 
-        Cart::restoreStock();
+        // Only a still-unpaid order can be cancelled, and only once, so stock
+        // is never restored twice.
+        $order = Order::where('id', $orderId)
+            ->where('status', Order::PENDING_PAYMENT)
+            ->first();
+
+        if ($order) {
+            $order->forceDelete();
+
+            Cart::restoreStock();
+        }
 
         if ($request->ajax()) {
             return response()->json(

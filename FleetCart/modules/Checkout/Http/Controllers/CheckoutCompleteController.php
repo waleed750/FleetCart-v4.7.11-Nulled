@@ -27,6 +27,22 @@ class CheckoutCompleteController
      */
     public function store(int $orderId, OrderService $orderService)
     {
+        abort_unless($orderService->isOwnedByVisitor($orderId), 403);
+
+        $pendingOrder = Order::findOrFail($orderId);
+
+        // A paid/placed order is never completed twice (no duplicate emails,
+        // no status reset) and the payment method can not be swapped after
+        // the order was created.
+        if ($pendingOrder->status !== Order::PENDING_PAYMENT) {
+            return redirect()->route('checkout.complete.show');
+        }
+
+        abort_unless(
+            request('paymentMethod') === $pendingOrder->getRawOriginal('payment_method'),
+            403
+        );
+
         if (request()->query('paymentMethod') === 'iyzico') {
             try {
                 $request = new \Iyzipay\Request\RetrieveCheckoutFormRequest();
