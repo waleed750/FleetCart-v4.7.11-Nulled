@@ -124,7 +124,7 @@ class ProductsImport implements OnEachRow, WithChunkReading, WithHeadingRow
             }
 
             $data["options"] = [];
-            $data['brand_id'] = $data['brand'];
+            $data['brand_id'] = $data['brand'] ?? null;
 
             request()->merge($data);
 
