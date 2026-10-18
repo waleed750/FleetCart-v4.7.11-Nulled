@@ -27,7 +27,11 @@ return new class extends Migration
     public function down()
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('is_virtual');
+            if (Schema::hasColumn('products', 'is_virtual')) {
+                $table->dropColumn('is_virtual');
+            } elseif (Schema::hasColumn('products', 'virtual')) {
+                $table->dropColumn('virtual');
+            }
         });
     }
 };

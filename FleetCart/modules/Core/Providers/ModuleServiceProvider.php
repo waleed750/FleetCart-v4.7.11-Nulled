@@ -34,7 +34,11 @@ class ModuleServiceProvider extends ServiceProvider
      */
     private function loadViews(Module $module)
     {
-        $this->loadViewsFrom("{$module->getPath()}/Resources/views", $module->get('alias'));
+        $path = "{$module->getPath()}/Resources/views";
+
+        if (is_dir($path)) {
+            $this->loadViewsFrom($path, $module->get('alias'));
+        }
     }
 
 
@@ -47,7 +51,11 @@ class ModuleServiceProvider extends ServiceProvider
      */
     private function loadTranslations(Module $module)
     {
-        $this->loadTranslationsFrom("{$module->getPath()}/Resources/lang", $module->get('alias'));
+        $path = "{$module->getPath()}/Resources/lang";
+
+        if (is_dir($path)) {
+            $this->loadTranslationsFrom($path, $module->get('alias'));
+        }
     }
 
 
@@ -80,7 +88,11 @@ class ModuleServiceProvider extends ServiceProvider
      */
     private function loadMigrations(Module $module)
     {
-        $this->loadMigrationsFrom("{$module->getPath()}/Database/Migrations");
+        $path = "{$module->getPath()}/Database/Migrations";
+
+        if (is_dir($path)) {
+            $this->loadMigrationsFrom($path);
+        }
     }
 
 

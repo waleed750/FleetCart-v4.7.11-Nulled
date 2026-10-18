@@ -35,5 +35,5 @@ modules/*/yarn.lock
 vite.config.js.*
 /storage/framework/cache/laravel-excel
 *.lock
-composer.lock
+!composer.lock
 yarn.lock

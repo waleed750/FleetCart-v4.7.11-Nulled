@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node ~/.claude/skills/agy-delegate/scripts/relay.mjs --brief /private/tmp/claude-501/-Users-waleedashraf-work-FleetCart-v4-7-11-Nulled/e7f4cb36-9aeb-4b17-9055-f8e8c0d99f83/scratchpad/brief.txt --cd '/Users/waleedashraf/work/FleetCart v4.7.11 Nulled/FleetCart' --effort high --timeout 2h)",
+      "Bash(sed -i '' '/^composer.lock$/d' .gitignore)",
+      "Bash(git -c user.name=waleed -c user.email=eng.waleed.ashraf.farag@gmail.com commit -q -m 'Upgrade Laravel 11.46 -> 12.70 \\(PHP >=8.3\\) *)",
+      "Bash(sed -i '' '/^!composer.lock$/d' .gitignore)",
+      "Bash(sed -i '' 's/^\\\\*\\\\.lock$/*.lock\\\\n!composer.lock/' .gitignore)",
+      "Bash(git -c user.name=waleed -c user.email=eng.waleed.ashraf.farag@gmail.com commit -q -m 'Track composer.lock so upgrade steps are reproducible *)",
+      "Bash(awk '{print $2, $11, $12, $13}')"
+    ]
+  }
+}
