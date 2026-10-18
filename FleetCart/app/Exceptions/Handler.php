@@ -74,7 +74,7 @@ class Handler extends ExceptionHandler
                 'message' => $e->getMessage(),
             ], Response::HTTP_FORBIDDEN),
             $this->shouldRedirectToAdminDashboard($e) => redirect()->route('admin.dashboard.index'),
-            $this->shouldShowNotFoundPage($e) => response()->view('storefront::errors.404'),
+            $this->shouldShowNotFoundPage($e) => response()->view('storefront::errors.404', [], Response::HTTP_NOT_FOUND),
             default => parent::render($request, $e),
         };
     }

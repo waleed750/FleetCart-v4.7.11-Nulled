@@ -58,6 +58,10 @@ Alpine.data(
             return Object.keys(this.addresses).length !== 0;
         },
 
+        get hasSingleCountry() {
+            return Object.keys(this.countries).length === 1;
+        },
+
         get firstCountry() {
             return Object.keys(this.countries)[0];
         },
@@ -166,6 +170,10 @@ Alpine.data(
                 } else {
                     this.form.shipping = {};
                     this.resetAddressErrors("shipping");
+
+                    if (newValue && this.hasSingleCountry) {
+                        this.changeShippingCountry(this.firstCountry);
+                    }
                 }
 
                 this.addTaxes();
@@ -192,6 +200,12 @@ Alpine.data(
             if (!this.hasAddress) {
                 this.form.newBillingAddress = true;
                 this.form.newShippingAddress = true;
+            }
+
+            // Single-country store (e.g. Egypt only): nothing to choose, so
+            // pre-select it and load its states / governorates.
+            if (this.hasSingleCountry && !this.form.billing.country) {
+                this.changeBillingCountry(this.firstCountry);
             }
 
             this.setTabReminder();

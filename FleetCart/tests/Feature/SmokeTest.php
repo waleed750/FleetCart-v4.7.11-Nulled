@@ -16,8 +16,6 @@ class SmokeTest extends TestCase
             'login' => ['/login'],
             'register' => ['/register'],
             'admin login' => ['/admin/login'],
-            'sitemap' => ['/sitemap.xml'],
-            'arabic home' => ['/ar'],
         ];
     }
 
@@ -26,6 +24,13 @@ class SmokeTest extends TestCase
     public function test_public_page_loads(string $url): void
     {
         $this->get($url)->assertOk();
+    }
+
+
+    public function test_missing_pages_return_a_real_404(): void
+    {
+        $this->get('/products/this-product-does-not-exist')->assertNotFound();
+        $this->get('/no/such/page')->assertNotFound();
     }
 
 

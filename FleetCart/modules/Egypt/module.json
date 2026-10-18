@@ -1,0 +1,9 @@
+{
+    "name": "Egypt",
+    "alias": "egypt",
+    "description": "Egyptian fashion store layer: governorate shipping, COD-only checkout, SEO, ad tracking, feature toggles.",
+    "priority": 200,
+    "providers": [
+        "Modules\\Egypt\\Providers\\EgyptServiceProvider"
+    ]
+}

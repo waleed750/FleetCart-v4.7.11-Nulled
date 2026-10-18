@@ -40,6 +40,8 @@
 
         @stack('styles')
 
+        @includeIf('egypt::partials.head')
+
         {!! setting('custom_header_assets') !!}
 
         <script>
@@ -78,6 +80,8 @@
         class="page-template {{ is_rtl() ? 'rtl' : 'ltr' }}"
         data-theme-color="{{ $themeColor->toHexString() }}"
     >
+        @includeIf('egypt::partials.body_start')
+
         <div x-data="App" class="wrapper">
             @include('storefront::public.layouts.top_nav')
             @include('storefront::public.layouts.header')

@@ -26,6 +26,13 @@ Setting::setMany([
     'flat_rate_cost' => 50,
     'supported_countries' => ['BD', 'EG'],
     'default_country' => 'EG',
+    // One language: with several, public URLs need a /<locale> prefix. The
+    // Arabic storefront is covered by unit tests and the browser walkthrough.
+    'default_locale' => 'en',
+    'supported_locales' => ['en'],
+    // Enabled in the payment settings on purpose: the cod_only switch must still hide it.
+    'bank_transfer_enabled' => 1,
+    'bank_transfer_label' => 'Bank transfer',
 ]);
 
 echo "fleetcart_test settings seeded\n";
