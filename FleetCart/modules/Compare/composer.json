@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": "^8.2.0",
-        "darryldecode/cart": "^4.2"
+        "darryldecode/cart": "dev-master"
     },
     "autoload": {
         "psr-4": {

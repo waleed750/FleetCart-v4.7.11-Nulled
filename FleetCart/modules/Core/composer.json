@@ -10,7 +10,7 @@
     "require": {
         "php": "^8.2.0",
         "algolia/algoliasearch-client-php": "^4.0",
-        "laravel/scout": "^10.0",
+        "laravel/scout": "^11.0",
         "league/flysystem-aws-s3-v3": "^3.12.2",
         "mcamara/laravel-localization": "^2.3",
         "meilisearch/meilisearch-php": "^1.12.0",

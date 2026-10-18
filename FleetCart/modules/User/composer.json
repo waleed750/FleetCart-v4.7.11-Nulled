@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "cartalyst/sentinel": "^9.0.0",
+        "cartalyst/sentinel": "^10.0",
         "laravel/socialite": "^5.0"
     },
     "autoload": {

@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "typicms/nestablecollection": "^5.0"
+        "typicms/nestablecollection": "^6.0"
     },
     "autoload": {
         "psr-4": {

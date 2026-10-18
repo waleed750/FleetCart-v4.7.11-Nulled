@@ -16,7 +16,7 @@
     "require": {
         "php": "^8.3",
         "maatwebsite/laravel-sidebar": "dev-master",
-        "yajra/laravel-datatables-oracle": "^12.0"
+        "yajra/laravel-datatables-oracle": "^13.0"
     },
     "autoload": {
         "psr-4": {

@@ -23,7 +23,7 @@ export default defineConfig(async ({ command }) => {
     ];
 
     // Fetching the asset files asynchronously
-    const assets = await glob(assetPatterns, { ignore: "node_modules/**" });
+    const assets = await glob(assetPatterns, { ignore: ["node_modules/**", "vendor/**", "public/**", "storage/**"] });
 
     return {
         base: "",
