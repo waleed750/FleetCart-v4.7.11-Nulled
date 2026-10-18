@@ -38,3 +38,4 @@ vite.config.js.*
 !composer.lock
 yarn.lock
 /storage/dotenv-editor/
+.phpunit.result.cache
