@@ -39,8 +39,8 @@ with no console errors.
 | cache/predis-adapter, swayok/cache-filesystem-adapter | pin `psr/cache ^1\|^2` | kept; they are why `symfony/cache` cannot move, but it is no longer installed |
 
 `vendor/` was never edited. Hold-backs worth knowing: **guzzle 8** and **cache/predis-adapter 3** exist
-but were not adopted (guzzle 7.16 is current for Laravel 13; predis-adapter 3 needs a PSR-6 3.x
-chain that swayok's adapter does not support).
+but were deliberately not adopted — neither is required by Laravel 13 (guzzle 7.16 is current for it) and
+both are major bumps with no feature this project needs. Re-evaluate when a package forces it.
 
 ## 3. Dependency advisories
 
