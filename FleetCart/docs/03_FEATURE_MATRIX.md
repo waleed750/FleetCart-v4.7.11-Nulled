@@ -58,7 +58,7 @@ Tests live in `tests/Feature` (`vendor/bin/phpunit`, 34 tests, prepare the DB wi
 | Admin login + dashboard + products/orders/settings/coupons | VERIFIED | AdminAccessTest |
 | Guests and customer accounts cannot enter admin | VERIFIED | AdminAccessTest |
 | Roles & granular permissions (25 modules ship `permissions.php`, routes use `can:` middleware) | CODE | `modules/User`, Sentinel |
-| Super-admin feature toggles | MISSING | planned for Phase 4 |
+| Super-admin feature toggles | MISSING in 4.7.11 → added in Phase 4 | `Modules/Egypt`, see 05 |
 | Reports: sales, products purchase/stock/view, customers, coupons, tax, shipping, search, brand/category/tag | CODE | `modules/Report` (13 report classes), one route; not exercised |
 | Order management, invoices/print, status emails/SMS | CODE | `Order`, `SendOrderStatusChangedEmail/Sms`, `print.scss` |
 | Transactions log | CODE | `Transaction` module |
@@ -70,8 +70,8 @@ Tests live in `tests/Feature` (`vendor/bin/phpunit`, 34 tests, prepare the DB wi
 | Sliders / banners, pages, menus, blog | CODE | `Slider`, `Page`, `Menu`, `Blog` modules; storefront settings tabs in admin |
 | Contact form, newsletter (Mailchimp) | CODE | `Contact`, `Newsletter` |
 | PWA / service worker | CODE | `silviolleite/laravelpwa`, `public/serviceworker.js` |
-| Sitemap | VERIFIED | `/sitemap.xml` 200 (spatie sitemap 8) |
-| Storefront renders: home, products, cart, login, register | VERIFIED | SmokeTest |
+| Sitemap | PARTIAL → fixed in Phase 4 | the stock generator (Admin > Sitemaps) writes a static, single-language `public/sitemap.xml` on demand; before it was run `/sitemap.xml` returned the soft-404 page with HTTP 200 (so an earlier "sitemap 200" in this audit was a false positive). Phase 4 serves a dynamic bilingual one |
+| Storefront renders: home, products, cart, login, register | VERIFIED | SmokeTest (and `missing_pages_return_a_real_404`, because the app used to answer 404 pages with HTTP 200) |
 
 ## Localisation & Egypt readiness
 
@@ -80,9 +80,9 @@ Tests live in `tests/Feature` (`vendor/bin/phpunit`, 34 tests, prepare the DB wi
 | Arabic UI strings | MISSING | only `en` lang folders exist; locale list includes `ar` and RTL detector handles `ar`, `fa`, etc. |
 | RTL layout | PARTIAL | `postcss-rtlcss` in build, RTL email/layout hooks exist; needs visual QA with real Arabic content |
 | Translatable product/category content, per-language meta | CODE | `astrotomic/laravel-translatable` |
-| `hreflang`, `canonical`, JSON-LD | MISSING | none in views |
-| Meta Pixel / GTM / GA4 / TikTok | MISSING | no tracking code anywhere |
-| Governorate-based shipping | MISSING | no `EG` states file (state is free text); single flat rate |
+| `canonical`, `hreflang`, BreadcrumbList | MISSING in 4.7.11 → added in Phase 4 | Product, WebSite (search action) JSON-LD and Open Graph/Twitter tags already existed |
+| Meta Pixel / GTM / GA4 / TikTok | MISSING in 4.7.11 → added in Phase 4 | (a free-text "custom header assets" setting existed) |
+| Governorate-based shipping | MISSING in 4.7.11 → added in Phase 4 | no `EG` states file existed (state was free text); only flat/free/pickup |
 | EGP currency | PARTIAL | currency defined, store runs USD; 2 decimals |
 | COD-only visibility | PARTIAL | COD works; other gateways are disabled via settings, not removed |
 | Egyptian phone validation / WhatsApp | MISSING | phone only `required` |
@@ -90,4 +90,4 @@ Tests live in `tests/Feature` (`vendor/bin/phpunit`, 34 tests, prepare the DB wi
 ## Verdict by area
 
 - Safe to build on: catalogue, cart, COD checkout, coupons, stock (after Phase 3 fixes).
-- Needs work for Egypt: Arabic pack, governorate shipping, simpler checkout form, SEO and ad tracking, unpaid-order expiry.
+- Needs work for Egypt: delivered in Phase 4 (see `05_EGYPT_STORE.md`) except unpaid-order expiry.

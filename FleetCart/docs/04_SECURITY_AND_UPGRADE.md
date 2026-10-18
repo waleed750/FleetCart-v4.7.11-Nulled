@@ -11,6 +11,7 @@
 | 2.4 Other PHP deps | `1cd684e` | excel 4, importer fix |
 | 2.5 JS | `cc12fb3` | tinymce 7, swiper 12, sass; build and browser check pass |
 | 3 Tests + fixes | `aea4923` | 34 tests green; fixes in audit §4.3 |
+| 4 Egypt build | `bb55031` | 62 tests green, browser walkthrough, see 05 |
 
 Gate results on 13.37 (PHP 8.3.6, MariaDB 10.11):
 `composer validate/install` ok · `route:list` 292 routes (298 before: the 6 missing are
@@ -18,7 +19,7 @@ Debugbar's, which Debugbar 4 no longer registers in production; Laravel 13 adds 
 `QUERY` verb to the two `any()` checkout routes) · `config:cache`, `route:cache`,
 `view:cache`, `optimize:clear` exit 0 · `migrate` then `migrate:rollback` on a scratch
 DB ok · installer `POST /install` → 96 tables · `npm run build` ok · smoke URLs
-`/ /products /cart /login /register /admin/login /sitemap.xml /ar` all 200 · admin login
+`/ /products /cart /login /register /admin/login` 200 (`/sitemap.xml` and `/ar` were counted as 200 at the time but were the soft-404 page; see audit §4.3 #7-8) · admin login
 (wrong password redirects back, right one enters `/admin`) and `/admin /admin/products
 /admin/orders /admin/settings` 200 · TinyMCE 7 and Swiper 12 load in headless Chromium
 with no console errors.
@@ -93,7 +94,7 @@ cd FleetCart
 composer install && npm ci && npm run build
 cp .env.example .env && php artisan key:generate   # then run the web installer once
 tests/prepare-db.sh fleetcart_local                # clones the installed DB to fleetcart_test
-vendor/bin/phpunit                                 # 34 tests, ~15 s
+vendor/bin/phpunit                                 # 62 tests, ~30 s
 ```
 
 ## 7. Decision

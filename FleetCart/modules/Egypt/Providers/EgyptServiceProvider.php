@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Modules\Checkout\Events\OrderPlaced;
+use Modules\Egypt\Console\DemoCommand;
 use Modules\Egypt\Console\InstallCommand;
 use Modules\Egypt\Http\Controllers\SitemapController;
 use Modules\Egypt\Http\Middleware\EnforceFeatures;
@@ -29,7 +30,7 @@ class EgyptServiceProvider extends ServiceProvider
         $this->app->singleton(Tracking::class);
         $this->app->singleton(GovernorateShipping::class);
 
-        $this->commands([InstallCommand::class]);
+        $this->commands([InstallCommand::class, DemoCommand::class]);
     }
 
 

@@ -94,6 +94,10 @@ clean, licensed package and diff against this tree.
 | 4 | `/checkout/{id}/payment-canceled` (any method, CSRF-exempt) had no ownership check | any visitor could permanently delete any order by id and add stock | owner check + only `pending_payment` + idempotent |
 | 5 | `/checkout/{id}/complete?paymentMethod=cod` had no ownership/method check | any visitor could mark **someone else's unpaid order** as placed by switching the method to COD | owner check + payment method must match the order + completed orders are not re-completed |
 | 6 | importer crashed on rows without a Brand (undefined index) | CSV import silently produced no products | null-coalesce |
+| 7 | the exception handler rendered the storefront 404 page with **HTTP 200** (`app/Exceptions/Handler.php`) | every missing page was a soft 404: bad for SEO, hides broken links from monitoring | return `404` |
+| 8 | `/sitemap.xml` only existed after an admin ran the static generator | search engines got the 404 page | dynamic bilingual sitemap (Phase 4) |
+| 9 | RTL: an off-canvas menu made the document horizontally scrollable; headless Chromium painted the first screen blank | broken first paint on RTL | `html{overflow-x:clip}` (Egypt head partial) |
+| 10 | checkout never preselected the only country of a single-country store | customers had to pick Egypt, then the governorate | Vue checkout preselects it |
 
 Caveat for #4/#5: ownership is the browser session that created the order. Gateways
 that call back with a cross-site POST or server-to-server (no session cookie) would
